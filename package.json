@@ -1,0 +1,77 @@
+{
+  "name": "mui-elapsing-bars",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Animated bar graph elapsing during time for React.JS",
+  "author": "Alireza Kavian <kay.alireza@gmail.com> (http://github.com/alirezakay)",
+  "keywords": [
+    "bars",
+    "bar chart",
+    "react",
+    "mui",
+    "material-ui",
+    "bar graph",
+    "line graph",
+    "time elapsing graph",
+    "animated",
+    "time motion bars",
+    "date representation",
+    "moving bars"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alirezakay/react-elapsing-bars.git"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "babel": {
+    "presets": [
+      "react",
+      "env",
+      "stage-2"
+    ]
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.35",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "prop-types": "^15.7.2",
+    "random-material-color": "^1.0.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build-dist": "NODE_ENV=production && rm -rf dist && mkdir dist && npx babel src/components --out-dir dist --copy-files"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1"
+  }
+}

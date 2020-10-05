@@ -1,2 +1,5 @@
 # react-elapsing-bars
-animated bar graph elapses during time
+
+Animated bar graph elapsing during time for React.JS
+
+**ON GOING ...**
