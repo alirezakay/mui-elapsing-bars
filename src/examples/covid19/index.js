@@ -31,8 +31,15 @@ const setting = {
   title: "COVID19 Total Deaths By Day",
   keyTitle: "Country",
   valueTitle: "Deaths",
-  dateDescending: true,
+  dateDescending: false,
   displayBarsNumbers: undefined,
+  interval: 300,
+  delay: 500,
+  run: true,
+  onStart: () => {console.log("START")},
+  onPause: () => {console.log("PAUSE")},
+  onResume: () => {console.log("RESUME")},
+  onEnd: () => {console.log("END")},
 };
 
 function Covid19({ classes }) {

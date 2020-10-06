@@ -1,83 +1,18 @@
-/** @jsx jsx */
-/* @jsxFrag React.Fragment */
-
-import React, { useState, useEffect, isValidElement } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, LinearProgress, Grid, Hidden } from '@material-ui/core';
-import { jsx, css } from '@emotion/core';
 import randomMC from 'random-material-color';
+import { makeStyles } from '@material-ui/core/styles';
+import { useTransition } from 'react-spring'
+import { renderDisplayData, renderDisplayHead } from './views/Display';
+import { renderTitle } from './views/Title';
+import styles from './styles';
 
-const useStyles = makeStyles({
-  ElapBars: {
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: 'auto',
-  },
-  title: {
-    textAlign: 'center',
-    padding: '5px 2.5%',
-    marginBottom: 25,
-  },
-  display: {
-    boxSizing: 'border-box',
-    width: '100%',
-    padding: '0 5%',
-  },
-  head: {
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  data: {
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  keyTitle: {
-    textAlign: 'left',
-  },
-  dateTitle: {
-    color: "#6b6b6b",
-    textShadow: "0 0 1px #ededed",
-  },
-  valueTitle: {
-    textAlign: 'right',
-  },
-  keyItem: {
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: '0 5px',
-  },
-  keyItemIcon: {
-    marginRight: 8,
-  },
-  keyItemText: {
-    textAlign: 'left',
-  },
-  bar: {
-    margin: 'auto 0',
-  },
-  barLine: {
-    height: 11,
-    borderRadius: 3,
-    backgroundColor: 'transparent',
-  },
-  valueItem: {
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-});
+import { cleanAndSortByDate, cleanAndSortByValue, sortDates, elapsingInterval } from './functions';
 
-/** @function ElapsingBars 
+const useStyles = makeStyles(styles);
+
+/** 
+ * @function ElapsingBars 
  * 
 */
 function ElapBars(props) {
@@ -101,208 +36,84 @@ function ElapBars(props) {
     interval,
     onStart,
     onPause,
+    onResume,
     onEnd,
   } = props;
   const classes = useStyles();
   const [currData, setCurrData] = useState([]);
-  const [currDateTitle, setCurrDateTitle] = useState("");
   const [maxValue, setMaxValue] = useState(0);
-  const [uniqueKeys, setUniqueKeys] = useState({});
+  const [uniqueKeys, setUniqueKeys] = useState([]);
+  const [uniqueDates, setUniqueDates] = useState([]);
+  const [intervalHandle, setIntervalHandle] = useState([]);
+  const dateTransitions = useTransition(currData[0] ? currData[0].date : "", date => date ? date.getTime() : "",
+    interval < 1000 ? {
+      from: { opacity: 0 },
+      enter: { opacity: 1 },
+      leave: { opacity: 0 },
+      config: { tension: 500, friction: 5, duration: 0, mass: 1 },
+    } : {
+        from: { transform: 'scale(0.5)', opacity: 0 },
+        enter: { transform: 'scale(1) ', opacity: 1 },
+        leave: { transform: 'scale(0.5)', opacity: 0 },
+        config: { tension: 400, friction: 5, duration: 100, mass: 1 },
+      });
+
+  const height = 30;
+  const Datatransitions = useTransition(
+    currData.map((d, i) => ({ ...d, height, y: i * height })),
+    d => `${d.key.text}`,
+    {
+      from: { position: 'absolute', height: height, opacity: 0 },
+      leave: { height: 0, opacity: 0 },
+      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
+      update: ({ y, height }) => ({ y, height }),
+      config: { tension: 200, friction: 25, duration: 200, mass: 1 },
+    }
+  );
 
   useEffect(() => {
-    data = (data || []).filter((d) => {
-      return (d.value !== undefined) && (d.key.text !== undefined);
-    }).map((d) => {
-      return ({
-        ...d,
-        value: parseFloat(d.value),
-        date: new Date(d.date),
-      });
-    }).sort((a, b) => {
-      return dateDescending ? (b.date.getTime() - a.date.getTime()) : (a.date.getTime() - b.date.getTime());
-    });
-
+    // clean and sort data by date
+    data = cleanAndSortByDate(data || [], dateDescending);
+    // get the first data for creating the current data i.e. data #1 (or d0)
     const d0 = data[0];
     if (d0) {
-      setCurrDateTitle(d0.date);
-      setCurrData(
-        data.filter((d) => {
-          return (d.date.getTime() === d0.date.getTime());
-        }).sort((a, b) => {
-          return valueDescending ? (b.value - a.value) : (a.value - b.value);
-        }).slice(0, displayBarsNumbers ? displayBarsNumbers : undefined)
-      );
+      const currData = cleanAndSortByValue(data, d0, valueDescending, displayBarsNumbers);
+      setCurrData(currData);
     }
-
-    setMaxValue(Math.max(...(data.map((d) => d.value))));
-    const uniq = new Set([]);
+    // find maximum value to be able to manage the bar width
+    setMaxValue(Math.max(...(currData.map((d) => d.value))));
+    // find unique keys and unique dates for the animation part and future uses
+    const uKeys = new Set([]);
+    const uDates = new Set([]);
     data.forEach((d) => {
-      uniq.add(d.key.text);
+      uKeys.add(d.key.text);
+      uDates.add(JSON.stringify(d.date));
     });
-    const uniqueKeys = Array.from(uniq).map((u) => {
+    // set the unique keys
+    const uniqueKeys = Array.from(uKeys).map((u) => {
       return ({
         text: u,
         color: randomMC.getColor({ shades: ['200', '300'], text: u }),
       })
-    })
+    });
     setUniqueKeys(uniqueKeys);
-  }, [data]);
+    // set the sorted unique dates
+    const uniqueDates = Array.from(uDates).map((u) => {
+      return new Date(JSON.parse(u));
+    });
+    setUniqueDates(sortDates(uniqueDates, dateDescending));
 
-  const renderTitle = (classes, title) => {
-    if (title) {
-      return (
-        <div className={`${classes.title} eb-title`}>
-          {
-            (typeof title === 'string') &&
-            (
-              <Typography variant="h1" component="div">{title}</Typography>
-            )
-          }
-          {
-            (isValidElement(title)) &&
-            (
-              title
-            )
-          }
-        </div>
+    setTimeout(() => {
+      // run the animation
+      const intervalHandle = elapsingInterval(
+        { interval, run, loop },
+        { uniqueDates, data, valueDescending, displayBarsNumbers },
+        { setCurrData, setMaxValue },
+        { onPause, onResume, onEnd, onStart }
       );
-    }
-  }
-
-  const renderDisplayHead = (classes,
-    {
-      keyTitle,
-      currDateTitle,
-      dateTitleVariant,
-      valueTitle
-    }
-  ) => {
-    return (
-      <Grid container className={`${classes.head} eb-display-head`}>
-        <Grid item xs={4} sm={4} md={3} lg={2} xl={2}>
-          <Typography variant="subtitle1" className={`${classes.keyTitle} eb-key-title`}>{keyTitle}</Typography>
-        </Grid>
-        <Grid item xs={8} sm={6} md={6} lg={8} xl={8}>
-          <Typography variant="h2" component="div" className={`${classes.dateTitle} eb-date-title`}>
-            {
-              currDateTitle &&
-              function () {
-                switch (dateTitleVariant) {
-                  case 'full':
-                    return currDateTitle.toDateString().substr(4);
-                  case 'year':
-                    return currDateTitle.toDateString().substr(11);
-                  default:
-                    return "";
-                }
-              }()
-            }
-          </Typography>
-        </Grid>
-        <Hidden xsDown implementation='js'>
-          <Grid item sm={2} md={3} lg={2} xl={2}>
-            <Typography variant="subtitle1" className={`${classes.valueTitle} eb-value-title`}>{valueTitle}</Typography>
-          </Grid>
-        </Hidden>
-      </Grid>
-    );
-  }
-
-  const renderDisplayData = (classes,
-    {
-      xsDisplayOptions,
-      maxValue,
-      valueDigitsCommaSeparation,
-      barColors,
-    }
-  ) => {
-    return (
-      currData.map((d) => {
-        let barStyle = css``;
-        switch (barColors) {
-          case 'same-primary':
-            break;
-          case 'primary-override':
-            if (d.barColor) {
-              barStyle = css`
-              & > div{
-                background-color: ${d.barColor};
-              }
-              `;
-            }
-            break;
-          case 'random':
-            barStyle = css`
-                  & > div{
-                    background-color: ${uniqueKeys.filter((u) => u.text === d.key.text)[0].color};
-                  }
-                `;
-            break;
-          default:
-            break;
-        }
-        return (
-          <Grid key={`${d.key.text}-${d.value}`} container className={`${classes.data} eb-display-data`}>
-            <Grid item xs={4} sm={4} md={3} lg={2} xl={2}>
-              <div className={`${classes.keyItem} eb-key-item`}>
-                {
-                  function () {
-                    switch (xsDisplayOptions.key) {
-                      case 'all':
-                        return (
-                          <>
-                            <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                          </>
-                        );
-                      case 'just-icon':
-                        return (
-                          <>
-                            <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            <Hidden xsDown implementation='css'>
-                              <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                            </Hidden>
-                          </>
-                        );
-                      case 'just-text':
-                        return (
-                          <>
-                            <Hidden xsDown implementation='css'>
-                              <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            </Hidden>
-                            <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                          </>
-                        );
-
-                      default:
-                        break;
-                    }
-                  }()
-                }
-              </div>
-            </Grid>
-            <Grid item xs={8} sm={6} md={6} lg={8} xl={8} className={`${classes.bar} eb-bar`}>
-              <LinearProgress
-                variant="determinate"
-                value={
-                  maxValue === 0 ? 0 : d.value * 100 / maxValue
-                }
-                className={`${classes.barLine} eb-bar-line`}
-                css={barStyle}
-              />
-            </Grid>
-            <Hidden xsDown implementation='js'>
-              <Grid item sm={2} md={3} lg={2} xl={2} className={`${classes.valueItem} eb-value-item`}>
-                {
-                  valueDigitsCommaSeparation ? String(d.value).replace(/(?<=\d)(?=(\d\d\d)+(?!\d))/g, ',') : d.value
-                }
-              </Grid>
-            </Hidden>
-          </Grid>
-        )
-      })
-    );
-  }
+      setIntervalHandle(intervalHandle);
+    }, delay);
+  }, []);
 
   return (
     <div className={`${classes.ElapBars} ${className}`} style={style}>
@@ -312,20 +123,25 @@ function ElapBars(props) {
       <div className={`${classes.display} eb-display`}>
         {
           renderDisplayHead(classes, {
+            dateTransitions,
             keyTitle,
-            currDateTitle,
             dateTitleVariant,
             valueTitle
           })
         }
-        {
-          renderDisplayData(classes, {
-            xsDisplayOptions,
-            maxValue,
-            valueDigitsCommaSeparation,
-            barColors,
-          })
-        }
+        <div className={`${classes.dataWrapper} eb-display-data-wrapper`}>
+          {
+            renderDisplayData(classes, {
+              Datatransitions,
+              currData,
+              uniqueKeys,
+              xsDisplayOptions,
+              maxValue,
+              valueDigitsCommaSeparation,
+              barColors,
+            })
+          }
+        </div>
       </div>
     </div>
   )
@@ -364,6 +180,7 @@ ElapBars.propTypes = {
   interval: PropTypes.number, // in milliseconds
   onStart: PropTypes.func,
   onPause: PropTypes.func,
+  onResume: PropTypes.func,
   onEnd: PropTypes.func,
 }
 
@@ -375,12 +192,12 @@ ElapBars.defaultProps = {
   keyTitle: null,
   dateTitleVariant: 'full',
   valueTitle: null,
-  displayBarsNumbers: null,
+  displayBarsNumbers: undefined,
   valueDigitsCommaSeparation: true,
   dateDescending: false,
   valueDescending: true,
   xsDisplayOptions: {
-    key: 'just-icon',
+    key: 'just-text',
   },
   run: false,
   loop: false,
@@ -388,6 +205,7 @@ ElapBars.defaultProps = {
   interval: 1000,
   onStart: () => { },
   onPause: () => { },
+  onResume: () => { },
   onEnd: () => { },
 }
 
