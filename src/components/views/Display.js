@@ -152,22 +152,22 @@ const renderDisplayData = (classes,
                             switch (disp) {
                               case 'both':
                                 return (
-                                  <>
+                                  <React.Fragment>
                                     <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
                                     <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                                  </>
+                                  </React.Fragment>
                                 );
                               case 'icon':
                                 return (
-                                  <>
+                                  <React.Fragment>
                                     <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                                  </>
+                                  </React.Fragment>
                                 );
                               case 'text':
                                 return (
-                                  <>
+                                  <React.Fragment>
                                     <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                                  </>
+                                  </React.Fragment>
                                 );
 
                               default:
