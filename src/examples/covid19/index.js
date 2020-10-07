@@ -37,20 +37,23 @@ const setting = {
     },
   },
   dateOptions: {
+    titleVariant: 'default',
     order: 'asc',
   },
   valueOptions: {
     title: 'Deaths',
+    digitsCommaSeparation: false,
     order: 'desc',
   },
   barOptions: {
     colorVariant: 'random',
     n: undefined, // you could use a number to limit the displaying bars
   },
-  interval: 300,
+  interval: 2000,
   delay: 500,
+  pure: false,
   run: true,
-  loop: true,
+  loop: false,
   onStart: () => { console.log("START") },
   onRestart: (n) => { console.log("RESTART #" + n) },
   onPause: () => { console.log("PAUSE") },

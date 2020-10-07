@@ -27,7 +27,7 @@ const defaultProps = {
     },
   },
   dateOptions: {
-    titleVariant: 'full',
+    titleVariant: 'default',
     order: 'asc',
   },
   valueOptions: {
@@ -39,13 +39,14 @@ const defaultProps = {
     colorVariant: 'primary',
     n: undefined,
   },
+  pure: false,
   run: false,
   restart: null,
   loop: false,
   delay: 500,
   interval: 1000,
   onStart: () => { },
-  onRestart: () => {},
+  onRestart: () => { },
   onPause: () => { },
   onResume: () => { },
   onEnd: () => { },
@@ -65,6 +66,7 @@ function ElapBars(props) {
     className,
     style,
     title,
+    pure,
     run,
     restart,
     loop,
@@ -82,7 +84,8 @@ function ElapBars(props) {
   const [uniqueKeys, setUniqueKeys] = useState([]);
   const [uniqueDates, setUniqueDates] = useState([]);
   const [intervalHandle, setIntervalHandle] = useState(null);
-  const dateTransitions = useTransition(currData[0] ? currData[0].date : "", date => date ? date.getTime() : "",
+  let dateTransitions = useTransition(currData[0] ? currData[0].date : "",
+    date => date ? date.getTime() : "",
     interval < 1000 ? {
       from: { opacity: 0 },
       enter: { opacity: 1 },
@@ -94,9 +97,8 @@ function ElapBars(props) {
         leave: { transform: 'scale(0.5)', opacity: 0 },
         config: { tension: 400, friction: 5, duration: 100, mass: 1 },
       });
-
   const rowHeight = 30;
-  const Datatransitions = useTransition(
+  let Datatransitions = useTransition(
     currData.map((d, i) => ({ ...d, height: rowHeight, y: i * rowHeight })),
     d => `${d.key.text}`,
     {
@@ -107,10 +109,24 @@ function ElapBars(props) {
       config: { tension: 200, friction: 25, duration: 200, mass: 1 },
     }
   );
+  if (pure) {
+    dateTransitions = (currData[0] ? [currData[0].date] : []).map((d) => ({
+      item: d,
+      key: d.getTime(),
+      props: {},
+      pure
+    }));
+    Datatransitions = currData.map((d) => ({
+      item: d,
+      key: d.key.text,
+      props: {},
+      pure
+    }));
+  }
 
   useEffect(() => {
     if (!data) return;
-    if (restart){
+    if (restart) {
       onRestart(restart);
     }
 
@@ -223,7 +239,7 @@ ElapBars.propTypes = {
   ).isRequired,
   className: PropTypes.string,
   style: PropTypes.shape({}),
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   keyOptions: PropTypes.shape({
     title: PropTypes.string,
     display: PropTypes.shape({
@@ -235,14 +251,22 @@ ElapBars.propTypes = {
     })
   }),
   dateOptions: PropTypes.shape({
-    titleVariant: PropTypes.oneOf(
-      [
-        'full',
-        'year',
-        'month-digit', 'month-text', 'month-text-abbr',
-        'day-digit', 'day-text', 'day-text-abbr'
-      ]
-    ),
+    titleVariant: PropTypes.oneOfType([
+      PropTypes.oneOf(
+        [
+          'default',
+          'full',
+          'full-date',
+          'year',
+          'month-digit', 'month-text', 'month-text-abbr',
+          'day-digit', 'day-text', 'day-text-abbr',
+          'hour', 'hour:min', 'hour:min:sec',
+          'min', 'min:sec',
+          'sec',
+        ]
+      ),
+      PropTypes.string,
+    ]),
     order: PropTypes.oneOf(['asc', 'desc']),
   }),
   valueOptions: PropTypes.shape({
@@ -256,6 +280,7 @@ ElapBars.propTypes = {
     ),
     n: PropTypes.number,
   }),
+  pure: PropTypes.bool,
   run: PropTypes.bool,
   restart: PropTypes.number,
   loop: PropTypes.bool,

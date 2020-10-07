@@ -2,9 +2,11 @@
 /* @jsxFrag React.Fragment */
 
 import React from 'react';
+import Moment from 'react-moment';
 import { animated } from 'react-spring'
 import { jsx, css } from '@emotion/core';
 import { Typography, LinearProgress, Grid, Hidden } from '@material-ui/core';
+
 
 const renderDisplayHead = (classes,
   {
@@ -29,22 +31,50 @@ const renderDisplayHead = (classes,
         className={`${classes.dateTitleAnimatedWrapper} eb-date-title-animated-wrapper`}
       >
         {
-          dateTransitions.map(({ item, props, key }) => (
+          dateTransitions.map(({ item, props, key, pure }) => (
             <animated.div
               key={key}
-              style={{ ...props, position: 'absolute' }}
+              style={{ ...props, position: pure?'relative':'absolute' }}
             >
               <Typography variant="h2" component="div" className={`${classes.dateTitle} eb-date-title`}>
                 {
                   item &&
                   function () {
                     switch (dateTitleVariant) {
+                      case 'default':
+                        return <Moment format="D MMM YYYY">{item}</Moment>
                       case 'full':
-                        return item.toDateString().substr(4);
+                        return <Moment format="YYYY/MM/DD hh:mm:ss">{item}</Moment>
+                      case 'full-date':
+                        return <Moment format="YYYY/MM/DD">{item}</Moment>
                       case 'year':
-                        return item.toDateString().substr(11);
+                        return <Moment format="YYYY">{item}</Moment>
+                      case 'month-digit':
+                        return <Moment format="MM">{item}</Moment>
+                      case 'month-text':
+                        return <Moment format="MMMM">{item}</Moment>
+                      case 'month-text-abbr':
+                        return <Moment format="MMM">{item}</Moment>
+                      case 'day-digit':
+                        return <Moment format="DD">{item}</Moment>
+                      case 'day-text':
+                        return <Moment format="dddd">{item}</Moment>
+                      case 'day-text-abbr':
+                        return <Moment format="ddd">{item}</Moment>
+                      case 'hour':
+                        return <Moment format="hh">{item}</Moment>
+                      case 'hour:min':
+                        return <Moment format="hh:mm">{item}</Moment>
+                      case 'hour:min:sec':
+                        return <Moment format="hh:mm:ss">{item}</Moment>
+                      case 'min':
+                        return <Moment format="mm">{item}</Moment>
+                      case 'min:sec':
+                        return <Moment format="mm:ss">{item}</Moment>
+                      case 'sec':
+                        return <Moment format="ss">{item}</Moment>
                       default:
-                        return item.toDateString().substr(4);
+                        return <Moment>{item}</Moment>;
                     }
                   }()
                 }
@@ -74,7 +104,7 @@ const renderDisplayData = (classes,
   }
 ) => {
   return (
-    Datatransitions.map(({ item: d, props: { y, ...rest }, key }, idx) => {
+    Datatransitions.map(({ item: d, props: { y, ...rest }, key, pure }, idx) => {
       let barStyle = css``;
       if (d.barColor) {
         barStyle = css`
@@ -102,8 +132,8 @@ const renderDisplayData = (classes,
         <animated.div
           key={key}
           style={{
-            zIndex: currData.length - idx,
-            transform: y.interpolate(y => `translate3d(0,${y}px,0)`),
+            zIndex: pure?1:(currData.length - idx),
+            transform: pure?"":y.interpolate(y => `translate3d(0,${y}px,0)`),
             ...rest
           }}
           className={`${classes.dataAnimated} eb-display-data-animated`}
