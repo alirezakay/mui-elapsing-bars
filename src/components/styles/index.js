@@ -1,5 +1,6 @@
 export default ({
   ElapBars: {
+    position: 'relative',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
@@ -7,6 +8,7 @@ export default ({
     alignItems: 'center',
     width: '100%',
     height: 'auto',
+    zIndex: 2048,
   },
   title: {
     textAlign: 'center',
@@ -14,6 +16,7 @@ export default ({
     marginBottom: 25,
   },
   display: {
+    position: 'relative',
     boxSizing: 'border-box',
     width: '100%',
     padding: '0 5%',
@@ -21,10 +24,13 @@ export default ({
   head: {
     textAlign: 'center',
     marginBottom: 20,
+    minHeight: 50,
   },
   dataWrapper:{
     position: 'relative',
     width: '100%',
+    height: 'max-content',
+    overflow: 'hidden',
   },
   dataAnimated: {
     top: 0,

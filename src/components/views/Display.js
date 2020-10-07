@@ -44,7 +44,7 @@ const renderDisplayHead = (classes,
                       case 'year':
                         return item.toDateString().substr(11);
                       default:
-                        return "";
+                        return item.toDateString().substr(4);
                     }
                   }()
                 }
@@ -67,7 +67,7 @@ const renderDisplayData = (classes,
     Datatransitions,
     currData,
     uniqueKeys,
-    xsDisplayOptions,
+    keyDisplay,
     maxValue,
     valueDigitsCommaSeparation,
     barColors,
@@ -76,19 +76,19 @@ const renderDisplayData = (classes,
   return (
     Datatransitions.map(({ item: d, props: { y, ...rest }, key }, idx) => {
       let barStyle = css``;
+      if (d.barColor) {
+        barStyle = css`
+                & > div{
+                  background-color: ${d.barColor};
+                }
+                `;
+      }
       switch (barColors) {
-        case 'same-primary':
-          break;
-        case 'primary-override':
-          if (d.barColor) {
-            barStyle = css`
-                    & > div{
-                      background-color: ${d.barColor};
-                    }
-                    `;
-          }
+        case 'primary':
+        case 'secondary':
           break;
         case 'random':
+          if (d.barColor) break;
           barStyle = css`
                         & > div{
                           background-color: ${uniqueKeys.filter((u) => u.text === d.key.text)[0].color};
@@ -112,38 +112,42 @@ const renderDisplayData = (classes,
             <Grid item xs={4} sm={4} md={3} lg={2} xl={2}>
               <div className={`${classes.keyItem} eb-key-item`}>
                 {
-                  function () {
-                    switch (xsDisplayOptions.key) {
-                      case 'all':
-                        return (
-                          <>
-                            <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                          </>
-                        );
-                      case 'just-icon':
-                        return (
-                          <>
-                            <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            <Hidden xsDown implementation='css'>
-                              <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                            </Hidden>
-                          </>
-                        );
-                      case 'just-text':
-                        return (
-                          <>
-                            <Hidden xsDown implementation='css'>
-                              <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
-                            </Hidden>
-                            <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
-                          </>
-                        );
+                  Object.keys(keyDisplay).map((k) => {
+                    const disp = keyDisplay[k];
+                    const hide = ['xs', 'sm', 'md', 'lg', 'xl'].filter((h) => h !== k);
+                    return (
+                      <Hidden key={k} only={hide} implementation='js'>
+                        {
+                          function () {
+                            switch (disp) {
+                              case 'both':
+                                return (
+                                  <>
+                                    <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
+                                    <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
+                                  </>
+                                );
+                              case 'icon':
+                                return (
+                                  <>
+                                    <div className={`${classes.keyItemIcon} eb-key-item-icon`}>{d.key.icon}</div>
+                                  </>
+                                );
+                              case 'text':
+                                return (
+                                  <>
+                                    <div className={`${classes.keyItemText} eb-key-item-text`}>{d.key.text}</div>
+                                  </>
+                                );
 
-                      default:
-                        break;
-                    }
-                  }()
+                              default:
+                                break;
+                            }
+                          }()
+                        }
+                      </Hidden>
+                    )
+                  })
                 }
               </div>
             </Grid>
@@ -154,6 +158,7 @@ const renderDisplayData = (classes,
                   maxValue === 0 ? 0 : d.value * 100 / maxValue
                 }
                 className={`${classes.barLine} eb-bar-line`}
+                color={/^(primary|secondary)$/.test(barColors) ? barColors : 'primary'}
                 css={barStyle}
               />
             </Grid>

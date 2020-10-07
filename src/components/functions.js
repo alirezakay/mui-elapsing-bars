@@ -3,9 +3,9 @@
  * Convert array to an acceptable format and sort by date Asc or Desc
  * 
  * @param {Array} data data array
- * @param {Boolean} dateDescending if true => sorts descending else => sorts ascending
+ * @param {String} order asc | desc
  */
-export const cleanAndSortByDate = (data, dateDescending) => {
+export const cleanAndSortByDate = (data, order) => {
   return data.filter((d) => {
     return (d.value !== undefined) && (d.key.text !== undefined);
   }).map((d) => {
@@ -15,7 +15,7 @@ export const cleanAndSortByDate = (data, dateDescending) => {
       date: new Date(d.date),
     });
   }).sort((a, b) => {
-    return dateDescending ? (b.date.getTime() - a.date.getTime()) : (a.date.getTime() - b.date.getTime());
+    return order==='desc' ? (b.date.getTime() - a.date.getTime()) : (a.date.getTime() - b.date.getTime());
   });
 }
 
@@ -24,11 +24,11 @@ export const cleanAndSortByDate = (data, dateDescending) => {
  * Sort dates array Asc or Desc
  * 
  * @param {Array} data data array
- * @param {Boolean} desc if true => sorts descending else => sorts ascending
+ * @param {String} order asc | desc
  */
-export const sortDates = (data, desc) => {
+export const sortDates = (data, order) => {
   return data.sort((a, b) => {
-    return desc ? (b.getTime() - a.getTime()) : (a.getTime() - b.getTime());
+    return order==='desc' ? (b.getTime() - a.getTime()) : (a.getTime() - b.getTime());
   });
 }
 
@@ -39,23 +39,30 @@ export const sortDates = (data, desc) => {
  * 
  * @param {Array} data data array
  * @param {Object} d0 first element of data array 
- * @param {Boolean} valueDescending if true => sorts descending else => sorts ascending
+ * @param {String} order asc | desc
  * @param {Number} retElementNums indicates how many elements should be returned
  */
-export const cleanAndSortByValue = (data, d0, valueDescending, retElementNums) => {
+export const cleanAndSortByValue = (data, d0, order, n) => {
   return data.filter((d) => {
     return (d.date.getTime() === d0.date.getTime());
   }).sort((a, b) => {
-    return valueDescending ? (b.value - a.value) : (a.value - b.value);
-  }).slice(0, retElementNums ? retElementNums : undefined)
+    return order==='desc' ? (b.value - a.value) : (a.value - b.value);
+  }).slice(0, n ? n : undefined)
 }
 
-const __getNextData = (data, date, valueDescending, retElementNums) => {
+/**
+ * 
+ * @param {Array} data 
+ * @param {Date} date 
+ * @param {Boolean} desc 
+ * @param {number} n 
+ */
+const __getNextData = (data, date, desc, n) => {
   return data.filter((d) => {
     return (d.date.getTime() === date.getTime());
   }).sort((a, b) => {
-    return valueDescending ? (b.value - a.value) : (a.value - b.value);
-  }).slice(0, retElementNums ? retElementNums : undefined)
+    return desc ? (b.value - a.value) : (a.value - b.value);
+  }).slice(0, n ? n : undefined)
 }
 
 /**
