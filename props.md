@@ -30,7 +30,7 @@
 
 | Name | Type | Default | Description |
 |:-----|:-----|:-----|:-----|
-| key * | object |  | **key** variable is the primary key for each row of the elapsing chart |
+| key * | `object` |  | **key** variable is the primary key for each row of the elapsing chart |
 | key.text * | `string` |  | required **text subject** for the key |
 | key.icon | `node` |  | optional react node for displaying extra graphics like **images** or **icons** |
 | value * | `number` |  | **value** variable is the countable value for each row of the elapsing chart |

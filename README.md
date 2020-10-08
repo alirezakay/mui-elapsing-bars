@@ -168,4 +168,4 @@ The future works will be taken into consideration if I see there is interests fr
 
 [mui]: https://material-ui.com
 [demo]: https://mui-elapsing-bars.vercel.app
-[props.md]: https://github.com/alirezakay/mui-elapsing-bars/props.md
+[props.md]: https://github.com/alirezakay/mui-elapsing-bars/blob/main/props.md
