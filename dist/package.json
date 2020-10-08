@@ -24,6 +24,8 @@
     "url": "https://github.com/alirezakay/mui-elapsing-bars.git"
   },
   "license": "GPL-3.0",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
   "babel": {
     "presets": [
       "react",

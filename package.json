@@ -1,6 +1,6 @@
 {
   "name": "mui-elapsing-bars",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": false,
   "description": "Animated bar graph elapsing during time for React.JS",
   "author": "Alireza Kavian <kay.alireza@gmail.com> (http://github.com/alirezakay)",
@@ -24,6 +24,8 @@
     "url": "https://github.com/alirezakay/mui-elapsing-bars.git"
   },
   "license": "GPL-3.0",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
   "babel": {
     "presets": [
       "react",
