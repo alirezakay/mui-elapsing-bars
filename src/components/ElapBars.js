@@ -43,8 +43,8 @@ const defaultProps = {
   run: false,
   restart: null,
   loop: false,
-  delay: 500,
-  interval: 1000,
+  delay: 1000,
+  interval: 700,
   onStart: () => { },
   onRestart: () => { },
   onPause: () => { },
@@ -86,15 +86,15 @@ function ElapBars(props) {
   const [intervalHandle, setIntervalHandle] = useState(null);
   let dateTransitions = useTransition(currData[0] ? currData[0].date : "",
     date => date ? date.getTime() : "",
-    interval < 1000 ? {
+    interval < 700 ? {
       from: { opacity: 0 },
       enter: { opacity: 1 },
       leave: { opacity: 0 },
       config: { tension: 500, friction: 5, duration: 0, mass: 1 },
     } : {
-        from: { transform: 'scale(0.5)', opacity: 0 },
+        from: { transform: 'scale(0.25)', opacity: 0 },
         enter: { transform: 'scale(1) ', opacity: 1 },
-        leave: { transform: 'scale(0.5)', opacity: 0 },
+        leave: { transform: 'scale(0.25)', opacity: 0 },
         config: { tension: 400, friction: 5, duration: 100, mass: 1 },
       });
   const rowHeight = 30;

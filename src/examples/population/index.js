@@ -1,34 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { ElapBars } from '../../components'; // importing from unbuilt component 
-import rawData from './owid-covid-data-truncated.json';
+import rawData from './wpby-truncated.json';
 
-const data = [];
-Object.keys(rawData).forEach((k) => {
-  const v = rawData[k];
-  const ds = v.data;
-  ds.forEach((d) => {
-    data.push({
-      key: {
-        text: v.location,
-        icon: (
-          <img
-            src={`https://flagcdn.com/w40/${k}.png`}
-            width="24"
-            height="16"
-            alt=""
-          />
-        ),
-      },
-      value: d.total_deaths,
-      date: d.date,
-      barColor: "",
-    })
-  })
-});
+const listOfCountries = [
+  'Afghanistan', 'Iran (Islamic Republic of)', 'United States of America',
+  'Finland', 'Denmark', 'Sweden', 'United Kingdom', 'Ireland', 'Canada',
+  'Netherlands', 'Greece', 'Germany', 'Austria', 'Brazil', 'Argentina',
+  'South Africa', 'Cameroon', 'Russian Federation', 'Romania',
+  'Spain', 'France', 'Saudi Arabia', 'Australia',
+]
+
+const data = rawData.filter((d) => listOfCountries.includes(d['Location'])).map((d) => ({
+  key: {
+    text: d['Location'],
+  },
+  value: parseInt(d['PopTotal'], 10),
+  date: String(d['Time']),
+}));
 
 const setting = {
   data,
-  title: "COVID19 Total Deaths By Day",
+  title: "World Population By Year",
   keyOptions: {
     title: 'Country',
     display: {
@@ -37,23 +29,23 @@ const setting = {
     },
   },
   dateOptions: {
-    titleVariant: 'default',
+    titleVariant: 'year',
     order: 'asc',
   },
   valueOptions: {
-    title: 'Deaths',
-    digitsCommaSeparation: false,
+    title: 'Population',
+    digitsCommaSeparation: true,
     order: 'desc',
   },
   barOptions: {
-    colorVariant: 'random',
-    n: undefined, // you could use a number to limit the displaying bars
+    colorVariant: 'primary',
+    n: 15,
   },
-  interval: 300,
-  delay: 500,
+  interval: 700,
+  delay: 1000,
   pure: false,
   run: true,
-  loop: false,
+  loop: true,
   onStart: () => { console.log("START") },
   onRestart: (n) => { console.log("RESTART #" + n) },
   onPause: () => { console.log("PAUSE") },
@@ -61,11 +53,12 @@ const setting = {
   onEnd: () => { console.log("END") },
 };
 
-function Covid19({}) {
+function Population({ }) {
   // you could replace restart props of ElapBars with this state variable
   // to see the changes and onRestart event  
   const [restart, setRestart] = useState(0);
   useEffect(() => {
+
     setTimeout(() => {
       setRestart(1)
     }, 5000);
@@ -81,4 +74,4 @@ function Covid19({}) {
   );
 }
 
-export default Covid19;
+export default Population;

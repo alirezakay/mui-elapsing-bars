@@ -16,8 +16,8 @@
 | run | `bool` | false | set `true` if you want to start/resume the elapsing bars. it will pause the run if you set **run**=`false` while **run** is `true` |
 | restart | `number` | null | each time you assign a number for this variable, the run process will restart itself. you can get this **restart number** as the first parameter of `onRestart` callback function |
 | loop | `bool` | false | if `true` => the process will **repeat** itself after ending |
-| delay | `number` | 500 | **start delay** in *milliseconds*. if loop=`true` then each time it start repeating the process, it will perform the delay |
-| interval | `number` | 1000 | the **interval** time between each **date** changing in *milliseconds* |
+| delay | `number` | 1000 | **start delay** in *milliseconds*. if loop=`true` then each time it start repeating the process, it will perform the delay |
+| interval | `number` | 700 | the **interval** time between each **date** changing in *milliseconds* |
 | onStart | `function` | () => { } | **start** callback |
 | onRestart | `function` | (n) => { } | **restart** callback - first parameter is the `restart` number |
 | onPause | `function` | () => { } | **pause** callback |
