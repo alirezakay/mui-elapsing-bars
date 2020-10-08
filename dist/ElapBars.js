@@ -75,8 +75,8 @@ var defaultProps = {
   run: false,
   restart: null,
   loop: false,
-  delay: 500,
-  interval: 1000,
+  delay: 1000,
+  interval: 700,
   onStart: function onStart() {},
   onRestart: function onRestart() {},
   onPause: function onPause() {},
@@ -139,15 +139,15 @@ function ElapBars(props) {
 
   var dateTransitions = (0, _reactSpring.useTransition)(currData[0] ? currData[0].date : "", function (date) {
     return date ? date.getTime() : "";
-  }, interval < 1000 ? {
+  }, interval < 700 ? {
     from: { opacity: 0 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },
     config: { tension: 500, friction: 5, duration: 0, mass: 1 }
   } : {
-    from: { transform: 'scale(0.5)', opacity: 0 },
+    from: { transform: 'scale(0.25)', opacity: 0 },
     enter: { transform: 'scale(1) ', opacity: 1 },
-    leave: { transform: 'scale(0.5)', opacity: 0 },
+    leave: { transform: 'scale(0.25)', opacity: 0 },
     config: { tension: 400, friction: 5, duration: 100, mass: 1 }
   });
   var rowHeight = 30;
