@@ -1,4 +1,6 @@
-# PROPS
+# `<ElapBars />` PROPS
+
+<br>
 
 ## Component `props`
 
