@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-**mui-elapsing-bars** is a React component for displaying an animated progress-bar list which get changed by time-elapsing. It is made with the flavour of our popular framework: [material-ui][mui].
+**mui-elapsing-bars** is a React component for displaying an animated progress-bar list which gets changed by time-elapsing. It is made with the flavour of our popular framework: [material-ui][mui] 😋
 
 <br/>
 <br/>
@@ -140,7 +140,7 @@ const defaultProps = {
 
 - To see the full documentation for the props, take a look at **[PROPS Document][props.md]**.
 
-- To see more examples, take a look at the **examples/** folder.
+- To see more examples, take a look at the **src/examples/** folder in the github repo.
 
 <br/>
 
@@ -168,4 +168,4 @@ The future works will be taken into consideration if I see there is interests fr
 
 [mui]: https://material-ui.com
 [demo]: https://mui-elapsing-bars.vercel.app
-[props.md]: https://github.com/alirezakay/mui-elapsing-bars/blob/main/props.md
+[props.md]: https://github.com/alirezakay/mui-elapsing-bars/blob/main/elap-bars-props.md
