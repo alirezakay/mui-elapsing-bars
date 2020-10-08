@@ -140,7 +140,7 @@ const defaultProps = {
 
 - To see the full documentation for the props, take a look at **[PROPS Document][props.md]**.
 
-- To see more example take a look at the **examples** folder
+- To see more examples, take a look at the **examples/** folder.
 
 <br/>
 
