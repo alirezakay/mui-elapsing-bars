@@ -1,1 +1,1 @@
-export { ElapBars } from './ElapBars';
+export { default as ElapBars } from './ElapBars';
