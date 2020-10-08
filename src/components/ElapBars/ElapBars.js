@@ -4,11 +4,11 @@ import randomMC from 'random-material-color';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTransition } from 'react-spring'
-import { renderDisplayData, renderDisplayHead } from './views/Display';
-import { renderTitle } from './views/Title';
-import styles from './styles';
+import { renderDisplayData, renderDisplayHead } from '../views/Display';
+import { renderTitle } from '../views/Title';
+import styles from '../styles';
 
-import { cleanAndSortByDate, cleanAndSortByValue, sortDates, elapsingInterval } from './functions';
+import { cleanAndSortByDate, cleanAndSortByValue, sortDates, elapsingInterval } from '../functions';
 
 const useStyles = makeStyles(styles);
 

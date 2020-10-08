@@ -28,15 +28,15 @@ var _styles = require('@material-ui/core/styles');
 
 var _reactSpring = require('react-spring');
 
-var _Display = require('./views/Display');
+var _Display = require('../views/Display');
 
-var _Title = require('./views/Title');
+var _Title = require('../views/Title');
 
-var _styles2 = require('./styles');
+var _styles2 = require('../styles');
 
 var _styles3 = _interopRequireDefault(_styles2);
 
-var _functions = require('./functions');
+var _functions = require('../functions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

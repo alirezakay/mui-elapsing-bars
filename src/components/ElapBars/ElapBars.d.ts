@@ -65,4 +65,4 @@ declare const ElapBars: React.FC<{
   onEnd: () => void;
 }>;
 
-export default ElapBars;
+export { ElapBars };
